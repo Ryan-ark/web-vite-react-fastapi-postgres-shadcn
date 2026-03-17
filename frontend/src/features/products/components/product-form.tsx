@@ -1,8 +1,12 @@
 import { FormEvent, useEffect, useState } from "react";
 
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
-import { Textarea } from "../../../components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 import { productFormSchema } from "../schemas/product-form-schema";
 import { Product, ProductFormValues } from "../types/product";
 
@@ -61,81 +65,89 @@ export function ProductForm({ product, isSubmitting, onCancelEdit, onSubmit }: P
   }
 
   return (
-    <section className="panel panel--form">
-      <div className="panel__header">
+    <Card className="border-primary/10 bg-card/85 backdrop-blur">
+      <CardHeader className="panel-header">
         <div>
           <p className="section-label">{product ? "Edit product" : "Create product"}</p>
-          <h2>{product ? product.name : "Add a new catalog item"}</h2>
+          <CardTitle className="mt-2 text-2xl">
+            {product ? product.name : "Add a new catalog item"}
+          </CardTitle>
         </div>
         {product ? (
           <Button variant="ghost" type="button" onClick={onCancelEdit}>
             Clear selection
           </Button>
         ) : null}
-      </div>
+      </CardHeader>
 
-      <form className="product-form" onSubmit={handleSubmit}>
-        <label className="field">
-          <span>Name</span>
-          <Input
-            value={values.name}
-            onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))}
-            placeholder="Desk Lamp"
-            required
-          />
-        </label>
-
-        <label className="field">
-          <span>Description</span>
-          <Textarea
-            rows={5}
-            value={values.description}
-            onChange={(event) =>
-              setValues((current) => ({ ...current, description: event.target.value }))
-            }
-            placeholder="Write a short description for the product."
-          />
-        </label>
-
-        <div className="field-grid">
-          <label className="field">
-            <span>Price</span>
+      <CardContent>
+        <form className="grid gap-5" onSubmit={handleSubmit}>
+          <div className="grid gap-2">
+            <Label htmlFor="product-name">Name</Label>
             <Input
-              type="number"
-              step="0.01"
-              min="0.01"
-              value={values.price}
-              onChange={(event) => setValues((current) => ({ ...current, price: event.target.value }))}
-              placeholder="49.99"
+              id="product-name"
+              value={values.name}
+              onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))}
+              placeholder="Desk Lamp"
               required
             />
-          </label>
+          </div>
 
-          <label className="field field--checkbox">
-            <input
-              type="checkbox"
-              checked={values.is_active}
+          <div className="grid gap-2">
+            <Label htmlFor="product-description">Description</Label>
+            <Textarea
+              id="product-description"
+              rows={5}
+              value={values.description}
               onChange={(event) =>
-                setValues((current) => ({ ...current, is_active: event.target.checked }))
+                setValues((current) => ({ ...current, description: event.target.value }))
               }
+              placeholder="Write a short description for the product."
             />
-            <span>Active listing</span>
-          </label>
-        </div>
+          </div>
 
-        {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
+          <div className="field-grid">
+            <div className="grid gap-2">
+              <Label htmlFor="product-price">Price</Label>
+              <Input
+                id="product-price"
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={values.price}
+                onChange={(event) => setValues((current) => ({ ...current, price: event.target.value }))}
+                placeholder="49.99"
+                required
+              />
+            </div>
 
-        <div className="form-actions">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : product ? "Update product" : "Create product"}
-          </Button>
-          {product ? (
-            <Button type="button" variant="secondary" onClick={onCancelEdit} disabled={isSubmitting}>
-              Cancel
+            <div className="flex items-end rounded-xl border border-dashed border-border p-4">
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <Checkbox
+                  checked={values.is_active}
+                  onCheckedChange={(checked) =>
+                    setValues((current) => ({ ...current, is_active: checked === true }))
+                  }
+                />
+                <span>Active listing</span>
+              </label>
+            </div>
+          </div>
+
+          {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
+
+          <div className="form-actions">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : product ? "Update product" : "Create product"}
             </Button>
-          ) : null}
-        </div>
-      </form>
-    </section>
+            {product ? (
+              <Button type="button" variant="secondary" onClick={onCancelEdit} disabled={isSubmitting}>
+                Cancel
+              </Button>
+            ) : null}
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
